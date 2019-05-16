@@ -1,4 +1,4 @@
-// rustfmt-format_strings: false
+// format_strings is false by default.
 
 println!(
     "DirEntry {{ \
