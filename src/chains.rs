@@ -71,7 +71,7 @@ use crate::shape::Shape;
 use crate::source_map::SpanUtils;
 use crate::utils::{
     self, first_line_width, last_line_extendable, last_line_width, mk_sp, rewrite_ident,
-    trimmed_last_line_width, wrap_str,
+    trimmed_last_line_width, valid_str,
 };
 
 pub(crate) fn rewrite_chain(
@@ -423,7 +423,7 @@ impl Rewrite for Chain {
 
         formatter.format_root(&self.parent, context, shape)?;
         if let Some(result) = formatter.pure_root() {
-            return wrap_str(result, context.config.max_width(), shape);
+            return valid_str(result, context.config.max_width(), shape);
         }
 
         // Decide how to layout the rest of the chain.
@@ -433,7 +433,7 @@ impl Rewrite for Chain {
         formatter.format_last_child(context, shape, child_shape)?;
 
         let result = formatter.join_rewrites(context, child_shape)?;
-        wrap_str(result, context.config.max_width(), shape)
+        valid_str(result, context.config.max_width(), shape)
     }
 }
 
@@ -791,7 +791,7 @@ impl<'a> ChainFormatter for ChainFormatterVisual<'a> {
                 .visual_indent(self.offset)
                 .sub_width(self.offset)?;
             let rewrite = item.rewrite(context, child_shape)?;
-            match wrap_str(rewrite, context.config.max_width(), shape) {
+            match valid_str(rewrite, context.config.max_width(), shape) {
                 Some(rewrite) => root_rewrite.push_str(&rewrite),
                 None => {
                     // We couldn't fit in at the visual indent, try the last
