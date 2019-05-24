@@ -12,7 +12,7 @@ use syntax::source_map::{BytePos, Span, NO_EXPANSION};
 use syntax_pos::Mark;
 use unicode_width::UnicodeWidthStr;
 
-use crate::comment::{filter_normal_code, CharClasses, FullCodeCharKind, LineClasses};
+use crate::comment::{string_lit_in_snippet, CharClasses, FullCodeCharKind, LineClasses};
 use crate::config::{Config, Version};
 use crate::rewrite::RewriteContext;
 use crate::shape::{Indent, Shape};
@@ -347,7 +347,7 @@ macro_rules! skip_out_of_file_lines_range_visitor {
 // Wraps String in an Option. Returns Some when the string adheres to the
 // Rewrite constraints defined for the Rewrite trait and None otherwise.
 pub(crate) fn wrap_str(s: String, max_width: usize, shape: Shape) -> Option<String> {
-    if is_valid_str(&filter_normal_code(&s), max_width, shape) {
+    if is_valid_str(&string_lit_in_snippet(&s), max_width, shape) {
         Some(s)
     } else {
         None
