@@ -1250,7 +1250,11 @@ fn rewrite_string_lit(context: &RewriteContext<'_>, span: Span, shape: Shape) ->
     let string_lit = context.snippet(span);
 
     if !context.config.format_strings() {
-        return valid_str(string_lit.to_owned(), context.config.max_width(), shape);
+        return if context.config.version() == Version::Two {
+            Some(string_lit.to_owned())
+        } else {
+            valid_str(string_lit.to_owned(), context.config.max_width(), shape)
+        };
     }
 
     // Remove the quote characters.

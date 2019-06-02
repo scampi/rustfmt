@@ -567,8 +567,7 @@ mod unit_tests {
         assert!(test_format_inner(format_code_block, code_block, expected));
 
         // more complex code block, taken from chains.rs.
-        let code_block =
-"let (nested_shape, extend) = if !parent_rewrite_contains_newline && is_continuable(&parent) {
+        let code_block = "let (nested_shape, extend) = if !parent_rewrite_contains_newline && is_continuable(&parent) {
 (
 chain_indent(context, shape.add_offset(parent_rewrite.len())),
 context.config.indent_style() == IndentStyle::Visual || is_small_parent,
@@ -588,8 +587,7 @@ false,
 )
 };
 ";
-        let expected =
-"let (nested_shape, extend) = if !parent_rewrite_contains_newline && is_continuable(&parent) {
+        let expected = "let (nested_shape, extend) = if !parent_rewrite_contains_newline && is_continuable(&parent) {
     (
         chain_indent(context, shape.add_offset(parent_rewrite.len())),
         context.config.indent_style() == IndentStyle::Visual || is_small_parent,
