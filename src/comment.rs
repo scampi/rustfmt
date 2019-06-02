@@ -1567,7 +1567,7 @@ pub(crate) fn recover_comment_removed(
     }
 }
 
-pub(crate) fn filter_normal_code(code: &str) -> String {
+pub(crate) fn string_lit_in_snippet(code: &str) -> String {
     let mut buffer = String::with_capacity(code.len());
     LineClasses::new(code).for_each(|(kind, line)| match kind {
         FullCodeCharKind::Normal
@@ -1880,19 +1880,19 @@ mod test {
     }
 
     #[test]
-    fn test_filter_normal_code() {
+    fn test_string_lit_in_snippet() {
         let s = r#"
 fn main() {
     println!("hello, world");
 }
 "#;
-        assert_eq!(s, filter_normal_code(s));
+        assert_eq!(s, string_lit_in_snippet(s));
         let s_with_comment = r#"
 fn main() {
     // hello, world
     println!("hello, world");
 }
 "#;
-        assert_eq!(s, filter_normal_code(s_with_comment));
+        assert_eq!(s, string_lit_in_snippet(s_with_comment));
     }
 }

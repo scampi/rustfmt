@@ -35,7 +35,7 @@ use crate::source_map::SpanUtils;
 use crate::spanned::Spanned;
 use crate::utils::{
     format_visibility, indent_next_line, is_empty_line, mk_sp, remove_trailing_white_spaces,
-    rewrite_ident, trim_left_preserve_layout, wrap_str, NodeIdExt,
+    rewrite_ident, trim_left_preserve_layout, valid_str, NodeIdExt,
 };
 use crate::visitor::FmtVisitor;
 
@@ -1328,7 +1328,7 @@ impl MacroBranch {
                 }
             }
         };
-        let new_body = wrap_str(
+        let new_body = valid_str(
             new_body_snippet.snippet.to_string(),
             config.max_width(),
             shape,

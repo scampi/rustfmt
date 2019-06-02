@@ -32,7 +32,7 @@ use crate::types::{rewrite_path, PathContext};
 use crate::utils::{
     colon_spaces, contains_skip, count_newlines, first_line_ends_with, inner_attributes,
     last_line_extendable, last_line_width, mk_sp, outer_attributes, ptr_vec_to_ref_vec,
-    semicolon_for_expr, semicolon_for_stmt, wrap_str,
+    semicolon_for_expr, semicolon_for_stmt, valid_str,
 };
 use crate::vertical::rewrite_with_alignment;
 use crate::visitor::FmtVisitor;
@@ -193,7 +193,7 @@ pub(crate) fn format_expr(
         }
         ast::ExprKind::Mac(ref mac) => {
             rewrite_macro(mac, None, context, shape, MacroPosition::Expression).or_else(|| {
-                wrap_str(
+                valid_str(
                     context.snippet(expr.span).to_owned(),
                     context.config.max_width(),
                     shape,
@@ -1238,7 +1238,7 @@ pub(crate) fn rewrite_literal(
 ) -> Option<String> {
     match l.node {
         ast::LitKind::Str(_, ast::StrStyle::Cooked) => rewrite_string_lit(context, l.span, shape),
-        _ => wrap_str(
+        _ => valid_str(
             context.snippet(l.span).to_owned(),
             context.config.max_width(),
             shape,
@@ -1250,34 +1250,7 @@ fn rewrite_string_lit(context: &RewriteContext<'_>, span: Span, shape: Shape) ->
     let string_lit = context.snippet(span);
 
     if !context.config.format_strings() {
-        if string_lit
-            .lines()
-            .dropping_back(1)
-            .all(|line| line.ends_with('\\'))
-        {
-            let new_indent = shape.visual_indent(1).indent;
-            let indented_string_lit = String::from(
-                string_lit
-                    .lines()
-                    .map(|line| {
-                        format!(
-                            "{}{}",
-                            new_indent.to_string(context.config),
-                            line.trim_start()
-                        )
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n")
-                    .trim_start(),
-            );
-            return if context.config.version() == Version::Two {
-                Some(indented_string_lit)
-            } else {
-                wrap_str(indented_string_lit, context.config.max_width(), shape)
-            };
-        } else {
-            return wrap_str(string_lit.to_owned(), context.config.max_width(), shape);
-        }
+        return valid_str(string_lit.to_owned(), context.config.max_width(), shape);
     }
 
     // Remove the quote characters.
@@ -1979,7 +1952,7 @@ fn choose_rhs<R: Rewrite>(
 
             match (orig_rhs, new_rhs) {
                 (Some(ref orig_rhs), Some(ref new_rhs))
-                    if wrap_str(new_rhs.clone(), context.config.max_width(), new_shape)
+                    if valid_str(new_rhs.clone(), context.config.max_width(), new_shape)
                         .is_none() =>
                 {
                     Some(format!(" {}", orig_rhs))
